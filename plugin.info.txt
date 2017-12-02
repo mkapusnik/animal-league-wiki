@@ -1,0 +1,7 @@
+base   animalleague
+author Michal Kapusnik
+email  michal.kapusnik@gmail.com
+date   2017-12-02
+name   animalleague plugin
+desc   Animal League - Syntax plugin for easier management of Team Managers
+url    https://wiki.zvireciliga.eu
