@@ -9,64 +9,84 @@
 if (!defined('DOKU_INC')) die();
 
 class syntax_plugin_animalleague_managers extends DokuWiki_Syntax_Plugin {
-    /**
-     * @return string Syntax mode type
-     */
     public function getType() {
-        return 'FIXME: container|baseonly|formatting|substition|protected|disabled|paragraphs';
+        return 'container'; //'container|baseonly|formatting|substition|protected|disabled|paragraphs';
     }
-    /**
-     * @return string Paragraph type
-     */
+
     public function getPType() {
-        return 'stack'; //normal|block
+        return 'block'; //normal|block|stack
     }
-    /**
-     * @return int Sort order - Low numbers go before high numbers
-     */
+
     public function getSort() {
-        return FIXME;
+        return 200;
     }
 
-    /**
-     * Connect lookup pattern to lexer.
-     *
-     * @param string $mode Parser mode
-     */
-    public function connectTo($mode) {
-        $this->Lexer->addSpecialPattern('<FIXME>',$mode,'plugin_animalleague_managers');
-//        $this->Lexer->addEntryPattern('<FIXME>',$mode,'plugin_animalleague_managers');
+    function getAllowedTypes() {
+        return array('container','substition','protected','disabled','formatting','paragraphs');
     }
 
-//    public function postConnect() {
-//        $this->Lexer->addExitPattern('</FIXME>','plugin_animalleague_managers');
-//    }
-
-    /**
-     * Handle matches of the animalleague syntax
-     *
-     * @param string          $match   The match of the syntax
-     * @param int             $state   The state of the handler
-     * @param int             $pos     The position in the document
-     * @param Doku_Handler    $handler The handler
-     * @return array Data for the renderer
-     */
-    public function handle($match, $state, $pos, Doku_Handler $handler){
-        $data = array();
-
-        return $data;
+    function connectTo($mode) {
+        $this->Lexer->addEntryPattern('##team(?=.*team##)',$mode,'plugin_animalleague_managers');
     }
 
-    /**
-     * Render xhtml output or metadata
-     *
-     * @param string         $mode      Renderer mode (supported modes: xhtml)
-     * @param Doku_Renderer  $renderer  The renderer
-     * @param array          $data      The data from the handler() function
-     * @return bool If rendering was successful.
-     */
+    function postConnect() {
+        $this->Lexer->addExitPattern('team##','plugin_animalleague_managers');
+    }
+
+    public function handle($match, $state, $pos, Doku_Handler $handler) {
+        switch ( $state ) {
+            case DOKU_LEXER_ENTER:
+                return array($state);
+
+            case DOKU_LEXER_UNMATCHED:
+                //$handler->_addCall('cdata', array($match), $pos);
+                return array($state, $match);
+                break;
+        }
+        return array($state, '');
+
+/*
+        switch ($state) {
+            case DOKU_LEXER_ENTER:
+                $this->syntax = substr($match, 1);
+                return false;
+
+            case DOKU_LEXER_UNMATCHED:
+                //$people = preg_split('\n', $match);
+                return explode("\n", $match);
+        }
+
+        return false;*/
+    }
+
     public function render($mode, Doku_Renderer $renderer, $data) {
         if($mode != 'xhtml') return false;
+
+        list($state,$match) = $data;
+        switch ($state) {
+            case DOKU_LEXER_ENTER:
+                $renderer->doc .= '<br> ===== XManažer ===== <br>';
+                break;
+
+            case DOKU_LEXER_EXIT :
+                $renderer->doc .= '<br>YYY';
+                $renderer->doc .= "[[Hello@seznam.cz]]: <br> ";
+                break;
+
+            default:
+                $renderer->doc .= ' DEFX '.$match.' DEFY ';
+        }
+
+
+        //list($content) = $data;
+        //[[garlat@centrum.cz]]
+
+        //$renderer->doc .= "[[Hello@seznam.cz]]: <br> ";
+        /*if($data) {
+            foreach ($data as $person) {
+                $renderer->doc .= 'A'.$person.'B'.'<br>';
+            }
+        }*/
 
         return true;
     }
